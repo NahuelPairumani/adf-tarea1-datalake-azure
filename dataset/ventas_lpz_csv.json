@@ -13,10 +13,12 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
+				"fileName": "ventas_sucursal_lpz.csv",
 				"folderPath": "bronze",
 				"fileSystem": "datalake-ventas"
 			},
 			"columnDelimiter": ",",
+			"encodingName": "WINDOWS-1252",
 			"escapeChar": "\\",
 			"firstRowAsHeader": true,
 			"quoteChar": "\""

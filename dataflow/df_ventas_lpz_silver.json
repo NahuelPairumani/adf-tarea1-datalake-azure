@@ -1,0 +1,103 @@
+{
+	"name": "df_ventas_lpz_silver",
+	"properties": {
+		"folder": {
+			"name": "Bronze"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ventas_lpz_csv",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "derivedColumn3"
+				},
+				{
+					"name": "derivedColumn4"
+				},
+				{
+					"name": "derivedColumn5"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "derivedColumn6"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ID_Venta as string,",
+				"          Fecha_Venta as string,",
+				"          Producto as string,",
+				"          Cant as string,",
+				"          PrecioUnit as string,",
+				"          Sucursal as string,",
+				"          Vendedor as string,",
+				"          NombreCliente as string,",
+				"          EmailCliente as string,",
+				"          MetodoPago as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 derive(Producto = trim(Producto),",
+				"          Sucursal = trim(Sucursal),",
+				"          Vendedor = trim(Vendedor),",
+				"          NombreCliente = trim(NombreCliente),",
+				"          EmailCliente = trim(EmailCliente),",
+				"          MetodoPago = trim(MetodoPago)) ~> derivedColumn1",
+				"derivedColumn1 derive(Producto = initCap(regexReplace(Producto,'\\\\s+',' ')),",
+				"          Vendedor = initCap(regexReplace(Vendedor,'\\\\s+',' ')),",
+				"          NombreCliente = initCap(regexReplace(NombreCliente,'\\\\s+',' '))) ~> derivedColumn2",
+				"derivedColumn2 derive(Sucursal = iif(in(['LPZ','La Paz','la paz','LA PAZ','L.P.','LP', 'lapaz', 'Lapaz'], Sucursal), 'La Paz', Sucursal)) ~> derivedColumn3",
+				"derivedColumn3 derive(PrecioUnit = toFloat(regexReplace(toString(PrecioUnit),'[^0-9.]','')),",
+				"          Cant = toInteger(Cant)) ~> derivedColumn4",
+				"derivedColumn4 derive(Fecha_Venta = coalesce(\r",
+				"    toDate(Fecha_Venta, 'dd \\'de\\' MMMM \\'de\\' yyyy'),\r",
+				"    toDate(Fecha_Venta, 'MMMM dd, yyyy'),\r",
+				"    toDate(Fecha_Venta, 'yyyy-MM-dd'),\r",
+				"    toDate(Fecha_Venta, 'dd-MM-yyyy'),\r",
+				"    toDate(Fecha_Venta, 'MM-dd-yyyy'),\r",
+				"    toDate(Fecha_Venta, 'dd/MM/yyyy'),\r",
+				"    toDate(Fecha_Venta, 'yyyy/MM/dd'),\r",
+				"    toDate(Fecha_Venta, 'dd/MMM/yyyy'),\r",
+				"    toDate(Fecha_Venta, 'dd-MMM-yyyy')\r",
+				")) ~> derivedColumn5",
+				"derivedColumn5 filter(Cant>0 && PrecioUnit>0 && !isNull(Cant) && !isNull(Fecha_Venta) && !isNull(PrecioUnit)) ~> filter1",
+				"filter1 select(mapColumn(",
+				"          ID_Venta,",
+				"          Fecha_Venta,",
+				"          Producto,",
+				"          Cant,",
+				"          PrecioUnit,",
+				"          Sucursal,",
+				"          Vendedor,",
+				"          NombreCliente,",
+				"          EmailCliente,",
+				"          MetodoPago",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 derive(canal = 'Sucursal') ~> derivedColumn6"
+			]
+		}
+	}
+}

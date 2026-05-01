@@ -34,6 +34,12 @@
 				},
 				{
 					"name": "filter1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "derivedColumn6"
 				}
 			],
 			"scriptLines": [
@@ -85,7 +91,23 @@
 				"    toDate(ultima_reposicion, 'dd/MMM/yyyy'),\r",
 				"    toDate(ultima_reposicion, 'dd-MMM-yyyy')\r",
 				")) ~> derivedColumn5",
-				"derivedColumn5 filter(!isNull(precio_venta) && !isNull(costo_adquisicion) && stock_actual>0) ~> filter1"
+				"derivedColumn5 filter(!isNull(precio_venta) && !isNull(costo_adquisicion) && stock_actual>0 && precio_venta>0 && costo_adquisicion>0) ~> filter1",
+				"filter1 select(mapColumn(",
+				"          codigo_producto,",
+				"          nombre_producto,",
+				"          categoria,",
+				"          precio_venta,",
+				"          costo_adquisicion,",
+				"          stock_actual,",
+				"          stock_minimo,",
+				"          sucursal,",
+				"          proveedor,",
+				"          ultima_reposicion,",
+				"          activo",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 derive(canal = 'Sucursal') ~> derivedColumn6"
 			]
 		}
 	}

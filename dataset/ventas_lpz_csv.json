@@ -18,7 +18,7 @@
 				"fileSystem": "datalake-ventas"
 			},
 			"columnDelimiter": ",",
-			"encodingName": "WINDOWS-1252",
+			"encodingName": "ISO-8859-1",
 			"escapeChar": "\\",
 			"firstRowAsHeader": true,
 			"quoteChar": "\""

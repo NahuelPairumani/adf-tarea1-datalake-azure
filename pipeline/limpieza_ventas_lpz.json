@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "df_ventas_lpz_silver",
+						"referenceName": "df_venta_lpz_bronze_silver",
 						"type": "DataFlowReference"
 					},
 					"compute": {

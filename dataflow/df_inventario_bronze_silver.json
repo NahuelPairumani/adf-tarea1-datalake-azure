@@ -1,5 +1,5 @@
 {
-	"name": "df_inventario_silver",
+	"name": "df_inventario_bronze_silver",
 	"properties": {
 		"folder": {
 			"name": "Bronze"
@@ -70,7 +70,14 @@
 				"source1 derive(nombre_producto = trim(nombre_producto),",
 				"          categoria = trim(categoria),",
 				"          sucursal = trim(sucursal),",
-				"          proveedor = trim(proveedor)) ~> derivedColumn1",
+				"          proveedor = trim(proveedor),",
+				"          codigo_producto = trim(codigo_producto),",
+				"          precio_venta = trim(precio_venta),",
+				"          costo_adquisicion = trim(costo_adquisicion),",
+				"          stock_actual = trim(stock_actual),",
+				"          stock_minimo = trim(stock_minimo),",
+				"          ultima_reposicion = trim(ultima_reposicion),",
+				"          activo = trim(activo)) ~> derivedColumn1",
 				"derivedColumn1 derive(nombre_producto = initCap(regexReplace(nombre_producto,'\\\\s+',' ')),",
 				"          categoria = initCap(regexReplace(categoria,'\\\\s+',' '))) ~> derivedColumn2",
 				"derivedColumn2 derive(sucursal = iif(in(['SCZ','Santa Cruz','Sta Cruz','santa cruz','SANTA CRUZ','Sta. Cruz','SC'], sucursal), 'Santa Cruz',\r",
@@ -102,7 +109,7 @@
 				"derivedColumn5 filter(!isNull(precio_venta) && !isNull(costo_adquisicion) && stock_actual>0 && precio_venta>0 && costo_adquisicion>0) ~> filter1",
 				"filter1 select(mapColumn(",
 				"          codigo_producto,",
-				"          nombre_producto,",
+				"          producto_nombre = nombre_producto,",
 				"          categoria,",
 				"          precio_venta,",
 				"          costo_adquisicion,",

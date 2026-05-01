@@ -1,0 +1,92 @@
+{
+	"name": "df_inventario_silver",
+	"properties": {
+		"folder": {
+			"name": "Bronze"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "inventario_xlsx",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "derivedColumn3"
+				},
+				{
+					"name": "derivedColumn4"
+				},
+				{
+					"name": "derivedColumn5"
+				},
+				{
+					"name": "filter1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          codigo_producto as string,",
+				"          nombre_producto as string,",
+				"          categoria as string,",
+				"          precio_venta as string,",
+				"          costo_adquisicion as string,",
+				"          stock_actual as string,",
+				"          stock_minimo as string,",
+				"          sucursal as string,",
+				"          proveedor as string,",
+				"          ultima_reposicion as string,",
+				"          activo as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 derive(nombre_producto = trim(nombre_producto),",
+				"          categoria = trim(categoria),",
+				"          sucursal = trim(sucursal),",
+				"          proveedor = trim(proveedor)) ~> derivedColumn1",
+				"derivedColumn1 derive(nombre_producto = initCap(regexReplace(nombre_producto,'\\\\s+',' ')),",
+				"          categoria = initCap(regexReplace(categoria,'\\\\s+',' '))) ~> derivedColumn2",
+				"derivedColumn2 derive(sucursal = iif(in(['SCZ','Santa Cruz','Sta Cruz','santa cruz','SANTA CRUZ','Sta. Cruz','SC'], sucursal), 'Santa Cruz',\r",
+				"iif(in(['LPZ','La Paz','la paz','LA PAZ','L.P.','LP'], sucursal), 'La Paz',\r",
+				"iif(in(['CBBA','Cochabamba','cochabamba','COCHABAMBA','CBB','CB'], sucursal), 'Cochabamba',\r",
+				"iif(in(['ORU','Oruro','oruro','ORURO','OR'], sucursal), 'Oruro',\r",
+				"iif(in(['PTS','Potosi','potosi','POTOSI','Potosí','potosí','PT'], sucursal), 'Potosí',\r",
+				"iif(in(['TJA','Tarija','tarija','TARIJA','TJ'], sucursal), 'Tarija',\r",
+				"iif(in(['CHQ','Chuquisaca','chuquisaca','CHUQUISACA','Sucre','sucre','SUC','CH'], sucursal), 'Chuquisaca',\r",
+				"iif(in(['BEN','Beni','beni','BENI','BN'], sucursal), 'Beni',\r",
+				"iif(in(['PND','Pando','pando','PANDO','PN'], sucursal), 'Pando', \r",
+				"sucursal))))))))),",
+				"          activo = iif(in(['true', 'si', '1', 'yes'], lower(toString(activo))), 1, 0)) ~> derivedColumn3",
+				"derivedColumn3 derive(precio_venta = toFloat(regexReplace(toString(precio_venta),'[^0-9.]','')),",
+				"          costo_adquisicion = toFloat(regexReplace(toString(costo_adquisicion),'[^0-9.]','')),",
+				"          stock_actual = toInteger(stock_actual),",
+				"          stock_minimo = toInteger(stock_minimo)) ~> derivedColumn4",
+				"derivedColumn4 derive(ultima_reposicion = coalesce(\r",
+				"    toDate(ultima_reposicion, 'dd \\'de\\' MMMM \\'de\\' yyyy'),\r",
+				"    toDate(ultima_reposicion, 'MMMM dd, yyyy'),\r",
+				"    toDate(ultima_reposicion, 'yyyy-MM-dd'),\r",
+				"    toDate(ultima_reposicion, 'dd-MM-yyyy'),\r",
+				"    toDate(ultima_reposicion, 'MM-dd-yyyy'),\r",
+				"    toDate(ultima_reposicion, 'dd/MM/yyyy'),\r",
+				"    toDate(ultima_reposicion, 'yyyy/MM/dd'),\r",
+				"    toDate(ultima_reposicion, 'dd/MMM/yyyy'),\r",
+				"    toDate(ultima_reposicion, 'dd-MMM-yyyy')\r",
+				")) ~> derivedColumn5",
+				"derivedColumn5 filter(!isNull(precio_venta) && !isNull(costo_adquisicion) && stock_actual>0) ~> filter1"
+			]
+		}
+	}
+}

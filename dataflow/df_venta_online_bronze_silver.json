@@ -105,7 +105,7 @@
 				"    toDate(timestamp, 'dd/MMM/yyyy'),\r",
 				"    toDate(timestamp, 'dd-MMM-yyyy')\r",
 				")) ~> derivedColumn5",
-				"derivedColumn5 filter(unit_price>0 && shipping_cost>0 && !isNull(qty) && !isNull(unit_price) && !isNull(shipping_cost) && !isNull(timestamp)) ~> filter1",
+				"derivedColumn5 filter(unit_price>0 && shipping_cost>0 && !isNull(qty) && !isNull(unit_price) && !isNull(shipping_cost) && !isNull(timestamp) && !isNull({customer/email})) ~> filter1",
 				"filter1 select(mapColumn(",
 				"          id_venta = order_id,",
 				"          fecha = timestamp,",

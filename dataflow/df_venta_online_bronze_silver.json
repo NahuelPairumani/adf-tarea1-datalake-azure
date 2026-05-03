@@ -18,7 +18,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "ventas_online_limpia_csv",
+						"referenceName": "ventas_scz_limpia_csv",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
@@ -125,19 +125,6 @@
 				"     skipDuplicateMapOutputs: true) ~> select1",
 				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     input(",
-				"          id_venta as string,",
-				"          fecha as string,",
-				"          producto as string,",
-				"          cantidad as string,",
-				"          precio_unitario as string,",
-				"          sucursal as string,",
-				"          vendedor as string,",
-				"          cliente_nombre as string,",
-				"          cliente_email as string,",
-				"          metodo_pago as string,",
-				"          canal as string",
-				"     ),",
 				"     partitionFileNames:['ventas_online_limpio.csv'],",
 				"     umask: 0022,",
 				"     preCommands: [],",
